@@ -450,13 +450,13 @@ function App() {
           <p className="wordmark">StretchDvr</p>
           <p className="eyebrow">AVI → MP4 · Batch · Client-side</p>
         </div>
-        <h1>DVR footage converter — fully in your browser.</h1>
+        <h1>DVR footage converter - fully in your browser.</h1>
         <p className="hero-subcopy">
           Convert 4:3 AVI recordings to MP4. Keep or remove audio, preserve 4:3 or
           stretch to 16:9. Queue multiple files and run them in parallel.
         </p>
         <p className="privacy-pill">
-          Files never leave your device — all processing runs client-side.
+          Files never leave your device, all processing runs client-side.
         </p>
       </header>
 
