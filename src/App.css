@@ -1,0 +1,808 @@
+/* ─── Root layout ──────────────────────────────────────────────────── */
+
+.app-root {
+  width: min(1280px, 100% - 2rem);
+  margin: 3rem auto 4rem;
+  display: grid;
+  gap: 1rem;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────── */
+
+.hero-panel {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1.75rem 2rem;
+}
+
+.brand-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.hero-panel h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.hero-subcopy {
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  max-width: 74ch;
+  line-height: 1.65;
+}
+
+.privacy-pill {
+  margin: 1rem 0 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Workspace grid ────────────────────────────────────────────────── */
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+/* ─── Panels ────────────────────────────────────────────────────────── */
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1.5rem;
+}
+
+.panel-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title-row h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.status-chip {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.5rem;
+  background: transparent;
+}
+
+/* ─── Dropzone ──────────────────────────────────────────────────────── */
+
+.dropzone {
+  border: 1px dashed var(--charcoal);
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+  background: var(--bedrock);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s ease, border-style 0.15s ease;
+}
+
+.dropzone:hover,
+.dropzone.is-dragging {
+  border-color: var(--red);
+  border-style: solid;
+}
+
+.dropzone-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.dropzone-subtitle {
+  margin: 0.3rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+/* ─── Staged files header ───────────────────────────────────────────── */
+
+.staged-header {
+  margin-top: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.staged-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+}
+
+.staged-total {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.staged-header h3,
+.simple-grid h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.empty-copy {
+  margin: 0.7rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+.control-note {
+  margin: 0.35rem 0 0;
+  color: var(--red);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  line-height: 1.45;
+  opacity: 0.75;
+}
+
+/* ─── File list ─────────────────────────────────────────────────────── */
+
+.file-list,
+.queue-list {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.file-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  background: var(--bedrock);
+}
+
+.file-list li span {
+  color: var(--text);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  word-break: break-all;
+  min-width: 0;
+}
+
+.file-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.file-item-meta small {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.file-remove-btn {
+  min-height: 1.6rem;
+  width: 1.6rem;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-color: transparent;
+  color: var(--text-dim);
+}
+
+.file-remove-btn:hover:not(:disabled) {
+  color: var(--red);
+  border-color: var(--border);
+}
+
+/* ─── Simple mode grid ──────────────────────────────────────────────── */
+
+.simple-grid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ─── Segmented controls ────────────────────────────────────────────── */
+
+.segmented {
+  margin-top: 0.45rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.segmented button {
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.55rem 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.segmented button:last-child {
+  border-right: 0;
+}
+
+.segmented button.is-active {
+  background: var(--red);
+  color: var(--bone);
+}
+
+.segmented button:hover:not(.is-active):not(:disabled) {
+  background: var(--charcoal);
+  color: var(--text);
+}
+
+.segmented button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Field grid ────────────────────────────────────────────────────── */
+
+.field-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field,
+.check-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field span {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-display);
+}
+
+.field small,
+.minor-note {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  font-family: var(--font-mono);
+}
+
+.field select,
+.field input {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--bedrock);
+  color: var(--text);
+  min-height: 2.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  padding: 0.4rem 0.6rem;
+  outline: none;
+  transition: border-color 0.12s ease;
+}
+
+.field select:focus,
+.field input:focus {
+  border-color: var(--red);
+}
+
+.field input[type='range'] {
+  padding: 0;
+  accent-color: var(--red);
+  border: none;
+  min-height: auto;
+}
+
+.field select:disabled,
+.field input:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.field:has(select:disabled) span,
+.field:has(select:disabled) small,
+.field:has(input:disabled) span,
+.field:has(input:disabled) small {
+  opacity: 0.35;
+}
+
+.check-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.check-row input[type='checkbox'] {
+  width: 0.9rem;
+  height: 0.9rem;
+  accent-color: var(--red);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.check-row span {
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* ─── Advanced section ──────────────────────────────────────────────── */
+
+.advanced-header {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.advanced-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field-row-span {
+  grid-column: 1 / -1;
+}
+
+.advanced-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.advanced-section-divider span {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* ─── Action row ────────────────────────────────────────────────────── */
+
+.action-row {
+  margin-top: 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────── */
+
+button {
+  border: 0;
+  border-radius: 0;
+  font-family: var(--font-display);
+  cursor: pointer;
+}
+
+.primary-button,
+.secondary-button,
+.success-button,
+.ghost-button {
+  min-height: 2.2rem;
+  padding: 0 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: opacity 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.primary-button {
+  background: var(--red);
+  color: var(--bone);
+  border: 1px solid var(--red);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: var(--red-deep);
+  border-color: var(--red-deep);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled,
+.success-button:disabled,
+.ghost-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.28;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.secondary-button:hover:not(:disabled) {
+  border-color: var(--ash);
+}
+
+.ghost-button {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.ghost-button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--ash);
+}
+
+.success-button {
+  background: var(--bone);
+  color: #000;
+  border: 1px solid var(--bone);
+}
+
+.success-button:hover:not(:disabled) {
+  background: var(--limestone);
+  border-color: var(--limestone);
+}
+
+/* ─── Notice text ───────────────────────────────────────────────────── */
+
+.notice-text {
+  margin: 0.85rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  line-height: 1.5;
+}
+
+/* ─── Queue stats ───────────────────────────────────────────────────── */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 0.9rem;
+}
+
+.stat-grid div {
+  background: var(--bedrock);
+  padding: 0.65rem 0.7rem;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.stat-grid small {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.58rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.stat-grid strong {
+  color: var(--text);
+  font-size: 1.3rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ─── Queue overall progress ────────────────────────────────────────── */
+
+.queue-progress-track {
+  height: 2px;
+  background: var(--charcoal);
+  overflow: hidden;
+}
+
+.queue-progress-fill {
+  height: 100%;
+  background: var(--red);
+  transition: width 0.25s ease;
+}
+
+.queue-progress-copy {
+  margin: 0.4rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+}
+
+/* ─── Queue items ───────────────────────────────────────────────────── */
+
+.queue-list {
+  gap: 1px;
+}
+
+.queue-item {
+  border: 1px solid var(--border);
+  background: var(--bedrock);
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  display: grid;
+  gap: 0.42rem;
+  position: relative;
+}
+
+.queue-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--charcoal);
+}
+
+.status-preparing::before,
+.status-converting::before {
+  background: var(--red);
+}
+
+.status-completed::before {
+  background: var(--bone);
+}
+
+.status-failed::before {
+  background: var(--red-deep);
+}
+
+.status-cancelled::before {
+  background: var(--charcoal);
+}
+
+.queue-item-top,
+.queue-item-meta,
+.job-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.queue-item-top strong {
+  color: var(--text);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.queue-item-top span {
+  color: var(--text-dim);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.queue-item-meta small {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+}
+
+/* ─── Job progress bar ──────────────────────────────────────────────── */
+
+.job-progress-track {
+  height: 2px;
+  background: var(--charcoal);
+  overflow: hidden;
+}
+
+.job-progress-track div {
+  height: 100%;
+  background: var(--red);
+  transition: width 0.2s ease;
+}
+
+.job-message {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  line-height: 1.45;
+}
+
+/* ─── Job actions ───────────────────────────────────────────────────── */
+
+.job-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.job-actions .ghost-button,
+.job-actions .success-button {
+  min-height: 1.8rem;
+  font-size: 0.62rem;
+  padding-inline: 0.55rem;
+}
+
+/* ─── Status overrides ──────────────────────────────────────────────── */
+
+.status-failed .queue-item-top span {
+  color: var(--red);
+}
+
+.status-completed .queue-item-top span {
+  color: var(--bone);
+}
+
+.status-cancelled .queue-item-top span {
+  color: var(--text-dim);
+}
+
+/* ─── Utility ───────────────────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ─── Reveal animation ──────────────────────────────────────────────── */
+
+.reveal {
+  animation: reveal 0.4s ease both;
+}
+
+.reveal-delay-1 {
+  animation-delay: 0.05s;
+}
+
+.reveal-delay-2 {
+  animation-delay: 0.1s;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────── */
+
+@media (max-width: 1020px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-root {
+    width: calc(100% - 1.5rem);
+    margin: 2.5rem auto 2rem;
+    gap: 0.75rem;
+  }
+
+  .hero-panel {
+    padding: 1.25rem;
+  }
+
+  .panel {
+    padding: 1.1rem;
+  }
+
+  .simple-grid,
+  .field-grid,
+  .advanced-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .action-row {
+    justify-content: stretch;
+  }
+
+  .action-row button {
+    flex: 1 1 auto;
+  }
+}

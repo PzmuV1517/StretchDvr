@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', Menlo, 'SF Mono', Consolas, monospace;
+
+  --bedrock: #0A0A0A;
+  --sediment: #111111;
+  --charcoal: #2A2A2A;
+  --ash: #9A9A9A;
+  --slate: #666666;
+  --bone: #F7F7F7;
+  --limestone: #FFFFFF;
+  --red: #FF2A2A;
+  --red-deep: #9D0000;
+
+  --bg: var(--bedrock);
+  --surface: var(--sediment);
+  --border: var(--charcoal);
+  --text: #F5F5F5;
+  --text-muted: var(--ash);
+  --text-dim: var(--slate);
+  --accent: var(--red);
+
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+body::before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red);
+  z-index: 100;
+}
