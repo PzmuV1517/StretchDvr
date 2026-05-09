@@ -6,10 +6,12 @@
 // released back to the idle list and reused. Only a cancelled job discards
 // its worker, and the pool immediately spawns a replacement.
 
-const WORKER_URL = new URL('./ffmpeg.worker.ts', import.meta.url)
+// ?worker tells Vite to compile the TypeScript and return a proper Worker
+// constructor — avoids the raw .ts URL being served with video/mp2t MIME type.
+import FFmpegWorker from './ffmpeg.worker.ts?worker'
 
 function spawnWorker(): Worker {
-  const worker = new Worker(WORKER_URL, { type: 'module' })
+  const worker = new FFmpegWorker()
   worker.postMessage({ type: 'warmup' })
   return worker
 }
