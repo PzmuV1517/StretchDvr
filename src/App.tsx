@@ -513,7 +513,14 @@ function App() {
     <div className="app-root">
       <header className="hero-panel reveal">
         <div className="brand-row">
-          <p className="wordmark">StretchDvr</p>
+          <div className="wordmark-group">
+            <p className="wordmark">StretchDvr</p>
+            <svg className="wordmark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true">
+              <path d="M14 18 L6 18 L6 46 L14 46" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="square" strokeLinejoin="miter"/>
+              <path d="M50 18 L58 18 L58 46 L50 46" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="square" strokeLinejoin="miter"/>
+              <rect x="22" y="30" width="20" height="4" fill="currentColor"/>
+            </svg>
+          </div>
         </div>
         <h1>DVR footage processor</h1>
         <p className="hero-subcopy">

@@ -55,6 +55,19 @@
   border-bottom: 1px solid var(--border);
 }
 
+.wordmark-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wordmark-icon {
+  width: 1.45rem;
+  height: 1.45rem;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
 .wordmark {
   margin: 0;
   font-family: var(--font-display);
