@@ -22,7 +22,14 @@ import {
 import type { QueueJob, QueueJobStatus } from './types/job'
 import { DenoiseHelpModal } from './components/DenoiseHelpModal'
 import { DenoiseNumberInput } from './components/DenoiseNumberInput'
+import { AdBanner } from './components/AdBanner'
+import { WelcomeModal, shouldShowWelcome } from './components/WelcomeModal'
 import './App.css'
+
+// ─── AdSense config — swap these two values after your account is approved ───
+const AD_CLIENT = 'ca-pub-4530507782343414'
+const AD_SLOT_LEFT  = '8238026785'
+const AD_SLOT_RIGHT = '4546193787'
 
 const MIN_CONCURRENCY = 1
 
@@ -112,6 +119,7 @@ function App() {
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [denoiseHelpOpen, setDenoiseHelpOpen] = useState(false)
   const [isDownloadingAll, setIsDownloadingAll] = useState(false)
+  const [welcomeOpen, setWelcomeOpen] = useState(shouldShowWelcome)
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const activeTasksRef = useRef<Map<string, TranscodeTask>>(new Map())
@@ -495,6 +503,13 @@ function App() {
   }, [jobs])
 
   return (
+    <div className="page-layout">
+      <aside className="ad-sidebar ad-sidebar-left" aria-hidden="true">
+        <AdBanner client={AD_CLIENT} slot={AD_SLOT_LEFT} />
+      </aside>
+      <aside className="ad-sidebar ad-sidebar-right" aria-hidden="true">
+        <AdBanner client={AD_CLIENT} slot={AD_SLOT_RIGHT} />
+      </aside>
     <div className="app-root">
       <header className="hero-panel reveal">
         <div className="brand-row">
@@ -1265,6 +1280,10 @@ function App() {
       {denoiseHelpOpen && (
         <DenoiseHelpModal onClose={() => setDenoiseHelpOpen(false)} />
       )}
+      {welcomeOpen && (
+        <WelcomeModal onClose={() => setWelcomeOpen(false)} />
+      )}
+    </div>
     </div>
   )
 }

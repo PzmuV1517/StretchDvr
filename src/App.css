@@ -1,3 +1,33 @@
+/* ─── Ad sidebars ──────────────────────────────────────────────────── */
+
+.page-layout {
+  position: relative;
+}
+
+.ad-sidebar {
+  position: fixed;
+  top: 50vh;
+  transform: translateY(-50%);
+  width: 160px;
+  /* hide on viewports that don't have room beside the 1280px content */
+  display: none;
+}
+
+/* show only when there's at least 1280px content + 2×(160px ad + 24px gap) = ~1648px */
+@media (min-width: 1648px) {
+  .ad-sidebar {
+    display: block;
+  }
+}
+
+.ad-sidebar-left {
+  right: calc(50% + 656px);
+}
+
+.ad-sidebar-right {
+  left: calc(50% + 656px);
+}
+
 /* ─── Root layout ──────────────────────────────────────────────────── */
 
 .app-root {
@@ -963,6 +993,27 @@ button {
   font-size: 0.68rem;
   color: var(--text-dim);
   font-weight: 400;
+}
+
+/* ─── Welcome modal ─────────────────────────────────────────────────── */
+
+.welcome-modal {
+  max-width: 480px;
+}
+
+.welcome-modal-body p + p {
+  margin-top: 0.9rem;
+}
+
+.welcome-modal-thanks {
+  color: var(--bone);
+  font-weight: 500;
+}
+
+.welcome-modal-footer {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* ─── Denoise section ───────────────────────────────────────────────── */
