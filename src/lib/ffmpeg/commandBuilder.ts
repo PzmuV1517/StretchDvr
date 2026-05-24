@@ -7,6 +7,15 @@ import type {
   VideoCodec,
 } from '../../types/conversion'
 
+const buildDenoiseFilter = (settings: JobSettingsSnapshot): string => {
+  const { advanced, advancedEnabled } = settings
+  if (!advancedEnabled || !advanced.denoiseEnabled) return ''
+  const { denoiseLumaSpatial, denoiseChromaSpatial, denoiseLumaTmp, denoiseChromaTmp, denoisePreset } = advanced
+  const main = `hqdn3d=${denoiseLumaSpatial}:${denoiseChromaSpatial}:${denoiseLumaTmp}:${denoiseChromaTmp}`
+  // Heavy preset adds a chroma-only pre-pass to tackle heavy chroma bleed
+  return denoisePreset === 'heavy' ? `hqdn3d=0:4:0:6,${main}` : main
+}
+
 const QUALITY_TO_CRF: Record<QualityPreset, number> = {
   archive: 18,
   balanced: 23,
@@ -168,7 +177,9 @@ export const buildFfmpegCommand = (
   args.push('-c:v', videoCodec)
 
   const scaleFilter = buildScaleFilter(settings)
-  args.push('-vf', scaleFilter)
+  const denoiseFilter = buildDenoiseFilter(settings)
+  const videoFilter = denoiseFilter ? `${denoiseFilter},${scaleFilter}` : scaleFilter
+  args.push('-vf', videoFilter)
 
   if (advancedEnabled && advanced.fps > 0) {
     args.push('-r', String(sanitizePositiveInt(advanced.fps, 30)))

@@ -806,3 +806,245 @@ button {
     flex: 1 1 auto;
   }
 }
+
+/* ─── Help icon button ──────────────────────────────────────────────── */
+
+.help-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.help-icon-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ─── Help modal ────────────────────────────────────────────────────── */
+
+.help-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.help-modal {
+  background: var(--sediment);
+  border: 1px solid var(--charcoal);
+  width: min(640px, 100%);
+  max-height: 82vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.help-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--sediment);
+}
+
+.help-modal-header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.help-modal-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  line-height: 1;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.help-modal-close:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.help-modal-body {
+  padding: 1.2rem 1.4rem 1.6rem;
+}
+
+.help-modal-body p {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.help-modal-body h3 {
+  margin: 1.25rem 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.help-params {
+  margin: 0 0 0.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.help-params dt {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.help-params dt code {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-left: 0.35rem;
+}
+
+.help-params dd {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--charcoal);
+}
+
+.help-cautions {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.help-cautions li {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 0.35rem;
+}
+
+.param-range {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+/* ─── Denoise section ───────────────────────────────────────────────── */
+
+.denoise-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.denoise-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: opacity 0.15s;
+}
+
+.denoise-controls.is-disabled {
+  opacity: 0.32;
+  pointer-events: none;
+  user-select: none;
+}
+
+.denoise-preset-picker {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.denoise-params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1.25rem;
+}
+
+.denoise-filter-preview {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bedrock);
+  border: 1px solid var(--charcoal);
+}
+
+.denoise-filter-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.denoise-filter-preview code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--bone);
+  word-break: break-all;
+}
+
+/* ─── Number input error state ──────────────────────────────────────── */
+
+.field.is-error input {
+  border-color: var(--red) !important;
+  outline: 1px solid var(--red);
+}
+
+.error-text {
+  color: var(--red);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Bulk download row ─────────────────────────────────────────────── */
+
+.bulk-download-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.25rem;
+}

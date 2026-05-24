@@ -12,12 +12,16 @@ import { ffmpegPool } from './lib/ffmpeg/workerPool'
 import {
   DEFAULT_ADVANCED_SETTINGS,
   DEFAULT_SIMPLE_SETTINGS,
+  DENOISE_PRESETS,
   type AdvancedSettings,
+  type DenoisePreset,
   type JobSettingsSnapshot,
   type QualityPreset,
   type SimpleSettings,
 } from './types/conversion'
 import type { QueueJob, QueueJobStatus } from './types/job'
+import { DenoiseHelpModal } from './components/DenoiseHelpModal'
+import { DenoiseNumberInput } from './components/DenoiseNumberInput'
 import './App.css'
 
 const MIN_CONCURRENCY = 1
@@ -103,6 +107,8 @@ function App() {
     'Everything runs client-side. Files never leave your device.',
   )
   const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [denoiseHelpOpen, setDenoiseHelpOpen] = useState(false)
+  const [isDownloadingAll, setIsDownloadingAll] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const activeTasksRef = useRef<Map<string, TranscodeTask>>(new Map())
@@ -387,11 +393,8 @@ function App() {
     )
   }
 
-  const downloadJob = (job: QueueJob): void => {
-    if (!job.outputBlob) {
-      return
-    }
-
+  const downloadJob = useCallback((job: QueueJob): void => {
+    if (!job.outputBlob) return
     const downloadUrl = URL.createObjectURL(job.outputBlob)
     const anchor = document.createElement('a')
     anchor.href = downloadUrl
@@ -400,7 +403,44 @@ function App() {
     anchor.click()
     anchor.remove()
     URL.revokeObjectURL(downloadUrl)
-  }
+  }, [])
+
+  const downloadAllCompleted = useCallback(async (): Promise<void> => {
+    const done = jobs.filter((j) => j.status === 'completed' && Boolean(j.outputBlob))
+    if (done.length === 0) return
+    setIsDownloadingAll(true)
+    for (const job of done) {
+      downloadJob(job)
+      await new Promise<void>((r) => setTimeout(r, 300))
+    }
+    setIsDownloadingAll(false)
+  }, [jobs, downloadJob])
+
+  const downloadAndRemoveCompleted = useCallback(async (): Promise<void> => {
+    const done = jobs.filter((j) => j.status === 'completed' && Boolean(j.outputBlob))
+    if (done.length === 0) return
+    setIsDownloadingAll(true)
+    for (const job of done) {
+      downloadJob(job)
+      await new Promise<void>((r) => setTimeout(r, 300))
+    }
+    // Extra buffer — all downloads must have been handed to the OS before removal
+    await new Promise<void>((r) => setTimeout(r, 600))
+    setJobs((current) => current.filter((j) => j.status !== 'completed'))
+    setIsDownloadingAll(false)
+  }, [jobs, downloadJob])
+
+  const applyDenoisePreset = useCallback((preset: Exclude<DenoisePreset, 'custom'>): void => {
+    const p = DENOISE_PRESETS[preset]
+    setAdvancedSettings((current) => ({
+      ...current,
+      denoisePreset: preset,
+      denoiseLumaSpatial: p.lumaSpatial,
+      denoiseChromaSpatial: p.chromaSpatial,
+      denoiseLumaTmp: p.lumaTmp,
+      denoiseChromaTmp: p.chromaTmp,
+    }))
+  }, [])
 
   useEffect(() => {
     const activeTasks = activeTasksRef.current
@@ -410,6 +450,13 @@ function App() {
       activeTasks.clear()
     }
   }, [])
+
+  const denoiseFilterString = useMemo((): string => {
+    if (!advancedEnabled || !advancedSettings.denoiseEnabled) return ''
+    const { denoiseLumaSpatial, denoiseChromaSpatial, denoiseLumaTmp, denoiseChromaTmp, denoisePreset } = advancedSettings
+    const main = `hqdn3d=${denoiseLumaSpatial}:${denoiseChromaSpatial}:${denoiseLumaTmp}:${denoiseChromaTmp}`
+    return denoisePreset === 'heavy' ? `hqdn3d=0:4:0:6,${main}` : main
+  }, [advancedEnabled, advancedSettings])
 
   const queueStats = useMemo(() => {
     const total = jobs.length
@@ -942,6 +989,107 @@ function App() {
                   onChange={(event) => updateAdvanced('trimEnd', event.target.value)}
                 />
               </label>
+
+              {/* ── Denoise ─────────────────────────────────────────── */}
+              <div className="advanced-section-divider field-row-span">
+                <span>Denoise</span>
+                <button
+                  type="button"
+                  className="help-icon-btn"
+                  onClick={() => setDenoiseHelpOpen(true)}
+                  aria-label="Denoising help"
+                >
+                  ?
+                </button>
+              </div>
+
+              <div className="denoise-section field-row-span">
+                <label className="check-row">
+                  <input
+                    type="checkbox"
+                    checked={advancedSettings.denoiseEnabled}
+                    onChange={(e) => updateAdvanced('denoiseEnabled', e.target.checked)}
+                  />
+                  <span>Enable analogue denoising (hqdn3d)</span>
+                </label>
+
+                <p className="control-note">
+                  Enabling denoising significantly increases processing time.
+                </p>
+
+                <div className={`denoise-controls${advancedSettings.denoiseEnabled ? '' : ' is-disabled'}`}>
+                  <div className="denoise-preset-picker">
+                    {(['light', 'medium', 'heavy'] as const).map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        className={advancedSettings.denoisePreset === preset ? 'secondary-button' : 'ghost-button'}
+                        onClick={() => applyDenoisePreset(preset)}
+                        disabled={!advancedSettings.denoiseEnabled}
+                        aria-pressed={advancedSettings.denoisePreset === preset}
+                      >
+                        {preset.charAt(0).toUpperCase() + preset.slice(1)}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      className={advancedSettings.denoisePreset === 'custom' ? 'secondary-button' : 'ghost-button'}
+                      disabled={!advancedSettings.denoiseEnabled}
+                      onClick={() => updateAdvanced('denoisePreset', 'custom')}
+                      aria-pressed={advancedSettings.denoisePreset === 'custom'}
+                    >
+                      Custom
+                    </button>
+                  </div>
+
+                  <div className="denoise-params-grid">
+                    <DenoiseNumberInput
+                      label="Luma Spatial"
+                      min={0} max={10}
+                      value={advancedSettings.denoiseLumaSpatial}
+                      disabled={!advancedSettings.denoiseEnabled}
+                      onChange={(v) => setAdvancedSettings((c) => ({ ...c, denoisePreset: 'custom', denoiseLumaSpatial: v }))}
+                    />
+                    <DenoiseNumberInput
+                      label="Chroma Spatial"
+                      min={0} max={8}
+                      value={advancedSettings.denoiseChromaSpatial}
+                      disabled={!advancedSettings.denoiseEnabled}
+                      onChange={(v) => setAdvancedSettings((c) => ({ ...c, denoisePreset: 'custom', denoiseChromaSpatial: v }))}
+                    />
+                    <DenoiseNumberInput
+                      label="Luma Temporal"
+                      min={0} max={12}
+                      value={advancedSettings.denoiseLumaTmp}
+                      disabled={!advancedSettings.denoiseEnabled}
+                      onChange={(v) => setAdvancedSettings((c) => ({ ...c, denoisePreset: 'custom', denoiseLumaTmp: v }))}
+                    />
+                    <DenoiseNumberInput
+                      label="Chroma Temporal"
+                      min={0} max={10}
+                      value={advancedSettings.denoiseChromaTmp}
+                      disabled={!advancedSettings.denoiseEnabled}
+                      onChange={(v) => setAdvancedSettings((c) => ({ ...c, denoisePreset: 'custom', denoiseChromaTmp: v }))}
+                    />
+                  </div>
+
+                  {denoiseFilterString && (
+                    <div className="denoise-filter-preview">
+                      <span className="denoise-filter-label">Filter</span>
+                      <code>{denoiseFilterString}</code>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className="ghost-button"
+                    onClick={() => applyDenoisePreset('medium')}
+                    disabled={!advancedSettings.denoiseEnabled}
+                  >
+                    Reset to Medium
+                  </button>
+                </div>
+              </div>
             </div>
           ) : null}
 
@@ -971,6 +1119,27 @@ function App() {
               Clear done
             </button>
           </div>
+
+          {queueStats.completed > 0 && (
+            <div className="bulk-download-row">
+              <button
+                type="button"
+                className="ghost-button"
+                disabled={isDownloadingAll}
+                onClick={() => { void downloadAllCompleted() }}
+              >
+                {isDownloadingAll ? 'Downloading…' : `Download all finished (${queueStats.completed})`}
+              </button>
+              <button
+                type="button"
+                className="ghost-button"
+                disabled={isDownloadingAll}
+                onClick={() => { void downloadAndRemoveCompleted() }}
+              >
+                {isDownloadingAll ? 'Downloading…' : 'Download & remove finished'}
+              </button>
+            </div>
+          )}
 
           <div className="stat-grid">
             <div>
@@ -1086,6 +1255,10 @@ function App() {
           )}
         </aside>
       </main>
+
+      {denoiseHelpOpen && (
+        <DenoiseHelpModal onClose={() => setDenoiseHelpOpen(false)} />
+      )}
     </div>
   )
 }

@@ -1,5 +1,20 @@
 export type AspectMode = 'preserve43' | 'stretch169'
 
+export type DenoisePreset = 'light' | 'medium' | 'heavy' | 'custom'
+
+export interface DenoiseParams {
+  lumaSpatial: number
+  chromaSpatial: number
+  lumaTmp: number
+  chromaTmp: number
+}
+
+export const DENOISE_PRESETS: Record<Exclude<DenoisePreset, 'custom'>, DenoiseParams> = {
+  light:  { lumaSpatial: 2, chromaSpatial: 2, lumaTmp: 3,  chromaTmp: 2 },
+  medium: { lumaSpatial: 4, chromaSpatial: 3, lumaTmp: 6,  chromaTmp: 4 },
+  heavy:  { lumaSpatial: 6, chromaSpatial: 5, lumaTmp: 10, chromaTmp: 7 },
+}
+
 export type QualityPreset = 'archive' | 'balanced' | 'compact'
 
 export type VideoCodec = 'h264' | 'h265' | 'mpeg4'
@@ -44,6 +59,12 @@ export interface AdvancedSettings {
   volumePercent: number
   trimStart: string
   trimEnd: string
+  denoiseEnabled: boolean
+  denoisePreset: DenoisePreset
+  denoiseLumaSpatial: number
+  denoiseChromaSpatial: number
+  denoiseLumaTmp: number
+  denoiseChromaTmp: number
 }
 
 export interface JobSettingsSnapshot {
@@ -63,7 +84,7 @@ export const DEFAULT_ADVANCED_SETTINGS: AdvancedSettings = {
   useCustomVideoBitrate: false,
   videoBitrateKbps: 6000,
   crf: 23,
-  preset: 'veryfast',
+  preset: 'ultrafast',
   fps: 0,
   keyframeInterval: 0,
   customResolution: false,
@@ -77,4 +98,10 @@ export const DEFAULT_ADVANCED_SETTINGS: AdvancedSettings = {
   volumePercent: 100,
   trimStart: '',
   trimEnd: '',
+  denoiseEnabled: false,
+  denoisePreset: 'medium',
+  denoiseLumaSpatial: DENOISE_PRESETS.medium.lumaSpatial,
+  denoiseChromaSpatial: DENOISE_PRESETS.medium.chromaSpatial,
+  denoiseLumaTmp: DENOISE_PRESETS.medium.lumaTmp,
+  denoiseChromaTmp: DENOISE_PRESETS.medium.chromaTmp,
 }
