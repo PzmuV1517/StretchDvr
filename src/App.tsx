@@ -94,6 +94,11 @@ const clampProgressPercent = (progress: number): number => {
   return Math.round(Math.min(1, Math.max(0, progress)) * 100)
 }
 
+const INITIAL_NOTICE =
+  'Kudos to RETRYWIN FPV for being a absolute king and promoting this tool, love you pookie <3. Also another big thanks to my ex Eliza for making me want to become the best at what I do.'
+
+const HIDDEN_NOTICE_SUFFIX = 'I hated every second of being with you Eliza.'
+
 function App() {
   const [simpleSettings, setSimpleSettings] = useState(DEFAULT_SIMPLE_SETTINGS)
   const [advancedSettings, setAdvancedSettings] = useState(DEFAULT_ADVANCED_SETTINGS)
@@ -103,9 +108,7 @@ function App() {
   const [concurrencyRaw, setConcurrencyRaw] = useState('2')
   const concurrency = parseInt(concurrencyRaw, 10)
   const concurrencyValid = Number.isFinite(concurrency) && concurrency >= MIN_CONCURRENCY
-  const [notice, setNotice] = useState(
-    'Everything runs client-side. Files never leave your device.',
-  )
+  const [notice, setNotice] = useState(INITIAL_NOTICE)
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [denoiseHelpOpen, setDenoiseHelpOpen] = useState(false)
   const [isDownloadingAll, setIsDownloadingAll] = useState(false)
@@ -496,15 +499,10 @@ function App() {
       <header className="hero-panel reveal">
         <div className="brand-row">
           <p className="wordmark">StretchDvr</p>
-          <p className="eyebrow">AVI / MP4 → MP4 · Batch · Client-side</p>
         </div>
-        <h1>DVR footage converter - fully in your browser.</h1>
+        <h1>DVR footage processor</h1>
         <p className="hero-subcopy">
-          Convert AVI or MP4 recordings to MP4. Keep or remove audio, preserve 4:3 or
-          stretch to 16:9. Queue multiple files and run them in parallel.
-        </p>
-        <p className="privacy-pill">
-          Files never leave your device, all processing runs client-side.
+          All processing is client-side. Nothing is uploaded.
         </p>
       </header>
 
@@ -1105,7 +1103,14 @@ function App() {
             </button>
           </div>
 
-          <p className="notice-text">{notice}</p>
+          <p className="notice-text">
+            {notice}
+            {notice === INITIAL_NOTICE && (
+              <span style={{ color: '#111111', userSelect: 'text' }}>
+                {HIDDEN_NOTICE_SUFFIX}
+              </span>
+            )}
+          </p>
         </section>
 
         <aside className="panel reveal reveal-delay-2" aria-label="Batch queue">
