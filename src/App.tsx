@@ -142,13 +142,14 @@ function App() {
       return
     }
 
-    const aviFiles = incomingFiles.filter((file) =>
-      file.name.toLowerCase().endsWith('.avi'),
-    )
-    const skipped = incomingFiles.length - aviFiles.length
+    const accepted = incomingFiles.filter((file) => {
+      const name = file.name.toLowerCase()
+      return name.endsWith('.avi') || name.endsWith('.mp4')
+    })
+    const skipped = incomingFiles.length - accepted.length
 
-    if (aviFiles.length === 0) {
-      setNotice('Only AVI files are accepted for conversion.')
+    if (accepted.length === 0) {
+      setNotice('Only AVI and MP4 files are accepted for conversion.')
       return
     }
 
@@ -156,7 +157,7 @@ function App() {
       const seen = new Set(current.map(fileFingerprint))
       const merged = [...current]
 
-      aviFiles.forEach((file) => {
+      accepted.forEach((file) => {
         const fingerprint = fileFingerprint(file)
         if (!seen.has(fingerprint)) {
           merged.push(file)
@@ -168,11 +169,11 @@ function App() {
     })
 
     if (skipped > 0) {
-      setNotice(`${aviFiles.length} AVI file(s) added. ${skipped} non-AVI file(s) skipped.`)
+      setNotice(`${accepted.length} file(s) added. ${skipped} unsupported file(s) skipped.`)
       return
     }
 
-    setNotice(`${aviFiles.length} AVI file(s) ready to queue.`)
+    setNotice(`${accepted.length} file(s) ready to queue.`)
   }, [])
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -189,7 +190,7 @@ function App() {
 
   const queueStagedFiles = (): void => {
     if (stagedFiles.length === 0) {
-      setNotice('Select at least one AVI file before adding to the queue.')
+      setNotice('Select at least one AVI or MP4 file before adding to the queue.')
       return
     }
 
@@ -495,11 +496,11 @@ function App() {
       <header className="hero-panel reveal">
         <div className="brand-row">
           <p className="wordmark">StretchDvr</p>
-          <p className="eyebrow">AVI → MP4 · Batch · Client-side</p>
+          <p className="eyebrow">AVI / MP4 → MP4 · Batch · Client-side</p>
         </div>
         <h1>DVR footage converter - fully in your browser.</h1>
         <p className="hero-subcopy">
-          Convert 4:3 AVI recordings to MP4. Keep or remove audio, preserve 4:3 or
+          Convert AVI or MP4 recordings to MP4. Keep or remove audio, preserve 4:3 or
           stretch to 16:9. Queue multiple files and run them in parallel.
         </p>
         <p className="privacy-pill">
@@ -540,13 +541,13 @@ function App() {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".avi,video/x-msvideo"
+              accept=".avi,.mp4,video/x-msvideo,video/mp4"
               multiple
               onChange={onFileInputChange}
               className="sr-only"
             />
-            <p className="dropzone-title">Drop AVI files here</p>
-            <p className="dropzone-subtitle">or click to browse your DVR exports</p>
+            <p className="dropzone-title">Drop AVI or MP4 files here</p>
+            <p className="dropzone-subtitle">or click to browse your files</p>
           </div>
 
           <div className="staged-header">
@@ -569,7 +570,7 @@ function App() {
           </div>
 
           {stagedFiles.length === 0 ? (
-            <p className="empty-copy">No AVI files staged yet.</p>
+            <p className="empty-copy">No files staged yet.</p>
           ) : (
             <ul className="file-list">
               {stagedFiles.map((file) => {
