@@ -14,6 +14,8 @@ const workerScope: DedicatedWorkerGlobalScope =
 
 let ffmpeg: FFmpeg | null = null
 let progressHooked = false
+/** Set to the thread count to pass to the encoder once the core is loaded. */
+let resolvedThreads: number | undefined
 
 // A single in-flight promise prevents double-initialisation when a warmup
 // message and a transcode message arrive before loading completes.
@@ -33,6 +35,25 @@ const sendStatus = (statusMessage: string): void => {
 const toErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message
   return 'Unexpected conversion error.'
+}
+
+/**
+ * Returns true when SharedArrayBuffer is usable in this context.
+ * Requires Cross-Origin-Opener-Policy: same-origin
+ *       + Cross-Origin-Embedder-Policy: require-corp
+ * to be sent by the server (already set in vite.config.ts for dev/preview).
+ * On production the hosting server must also send these two headers.
+ */
+const isCrossOriginIsolated = (): boolean => {
+  try {
+    return (
+      typeof SharedArrayBuffer !== 'undefined' &&
+      // crossOriginIsolated is true only when both COOP + COEP are in effect
+      (self as unknown as { crossOriginIsolated?: boolean }).crossOriginIsolated === true
+    )
+  } catch {
+    return false
+  }
 }
 
 const loadFfmpeg = (): Promise<FFmpeg> => {
@@ -56,17 +77,31 @@ const loadFfmpeg = (): Promise<FFmpeg> => {
       progressHooked = true
     }
 
-    sendStatus('Loading FFmpeg core in your browser...')
+    const useMT = isCrossOriginIsolated()
 
-    // toBlobURL fetches via plain HTTP (not Vite's module system) and wraps
-    // the response in a blob: URL, bypassing Vite's public/ import guard.
-    const base = '/ffmpeg-core'
-    const [coreURL, wasmURL] = await Promise.all([
-      toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
-      toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
-    ])
-
-    await ffmpeg.load({ coreURL, wasmURL })
+    if (useMT) {
+      sendStatus('Loading multi-threaded FFmpeg core...')
+      const base = '/ffmpeg-core-mt'
+      const [coreURL, wasmURL, workerURL] = await Promise.all([
+        toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
+        toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+        toBlobURL(`${base}/ffmpeg-core.worker.js`, 'text/javascript'),
+      ])
+      await ffmpeg.load({ coreURL, wasmURL, workerURL })
+      // Use all logical cores for the encoder. If two workers are running
+      // concurrently the OS scheduler divides the cores fairly between them.
+      resolvedThreads = 0 // 0 = FFmpeg auto-detect
+    } else {
+      sendStatus('Loading FFmpeg core in your browser...')
+      const base = '/ffmpeg-core'
+      const [coreURL, wasmURL] = await Promise.all([
+        toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
+        toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
+      ])
+      await ffmpeg.load({ coreURL, wasmURL })
+      // Single-threaded WASM — threads flag is not useful.
+      resolvedThreads = undefined
+    }
 
     return ffmpeg
   })()
@@ -76,7 +111,11 @@ const loadFfmpeg = (): Promise<FFmpeg> => {
 
 const transcode = async (payload: WorkerTranscodePayload): Promise<void> => {
   const ffmpegClient = await loadFfmpeg()
-  const { args, outputName } = buildFfmpegCommand(payload.inputName, payload.settings)
+  const { args, outputName } = buildFfmpegCommand(
+    payload.inputName,
+    payload.settings,
+    { threads: resolvedThreads },
+  )
   const inputData = new Uint8Array(payload.inputBuffer)
 
   sendStatus('Writing source file...')

@@ -112,14 +112,14 @@ const buildOutputName = (inputName: string, settings: JobSettingsSnapshot): stri
 
 const buildPreserveFilter = (fitMode: FitMode, width: number, height: number): string => {
   if (fitMode === 'crop') {
-    return `scale=${width}:${height}:force_original_aspect_ratio=increase:flags=lanczos,crop=${width}:${height},setsar=1`
+    return `scale=${width}:${height}:force_original_aspect_ratio=increase,crop=${width}:${height},setsar=1`
   }
 
   if (fitMode === 'pad') {
-    return `scale=${width}:${height}:force_original_aspect_ratio=decrease:flags=lanczos,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,setsar=1`
+    return `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,setsar=1`
   }
 
-  return `scale=${width}:${height}:flags=lanczos,setsar=1`
+  return `scale=${width}:${height},setsar=1`
 }
 
 const buildScaleFilter = (settings: JobSettingsSnapshot): string => {
@@ -135,7 +135,9 @@ const buildScaleFilter = (settings: JobSettingsSnapshot): string => {
       720,
     )
 
-    return `scale=${width}:${height}:flags=lanczos,setsar=1`
+    // bicubic (FFmpeg default — no flags= needed) is ~3× faster than lanczos
+    // and imperceptible on already-compressed DVR source footage.
+    return `scale=${width}:${height},setsar=1`
   }
 
   if (!advanced.customResolution) {
@@ -153,9 +155,15 @@ interface BuiltCommand {
   outputName: string
 }
 
+interface EncodingOptions {
+  /** Number of threads for the video encoder (0 = auto-detect). */
+  threads?: number
+}
+
 export const buildFfmpegCommand = (
   inputName: string,
   settings: JobSettingsSnapshot,
+  options: EncodingOptions = {},
 ): BuiltCommand => {
   const { advanced, simple, advancedEnabled } = settings
   const args: string[] = []
@@ -205,6 +213,20 @@ export const buildFfmpegCommand = (
     ? encoderPreset
     : 'medium'
   args.push('-preset', validatedPreset)
+
+  // Thread count — 0 means "auto" (FFmpeg picks based on CPU count).
+  // Passed in from the worker so it can set this after detecting whether the
+  // multi-threaded WASM core is active.
+  if (typeof options.threads === 'number') {
+    args.push('-threads', String(options.threads))
+  }
+
+  // fastdecode skips in-loop deblock & CABAC tuning that the encoder itself
+  // doesn't need; gives a small encode-time saving for h264/h265.
+  if (videoCodec === 'libx264' || videoCodec === 'libx265') {
+    args.push('-tune', 'fastdecode')
+  }
+
   args.push('-pix_fmt', 'yuv420p')
 
   if (simple.removeAudio) {
